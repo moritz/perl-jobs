@@ -26,7 +26,8 @@
                 <a class="navbar-brand" href="/">Test project</a>
             </div>
             <ul class="nav navbar-nav navbar-right">
-                % if (session 'logged_in') {
+                <li>Logged in as : <%= session('email') // '(nobody)' %></li>
+                % if (session 'email') {
                     <li><a href="#" id="app-logout">Logout</a>
                 % } else {
                     <li><a href="#" id="app-login">Login</a>

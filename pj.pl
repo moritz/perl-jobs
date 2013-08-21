@@ -15,6 +15,7 @@ Mojolicious::Static->new->paths(['static']);
 
 get '/' => sub {
     my $self = shift;
+    warn Dumper $self->session;
     $self->stash(config_json => Mojo::JSON->new->encode({ email => $self->session->{email} }));
     $self->render('index');
 } => 'index';
@@ -22,7 +23,6 @@ get '/' => sub {
 post '/login' => sub {
     my $self        = shift;
     my $assertion   = $self->param('assertion');
-    warn Dumper $self->session;
     if (defined $assertion) {
         my $tx = $ua->post('https://verifier.login.persona.org/verify',
             form => {
@@ -32,20 +32,18 @@ post '/login' => sub {
         if ($tx->success) {
             my $v = $tx->res->json;
             $self->session->{email}     = $v->{email};
-            $self->session->{signed_in} = 1;
             $self->render(json => $v);
             return 1;
         }
         warn Dumper([$tx->error]);
     }
-    $self->session->{signed_in} = 0;
     $self->render(json => { failed => 1}, status => 500);
 
 };
 
 post '/logout' => sub {
     my $self = shift;
-    $self->session->{signed_in} = 0;
+    delete $self->session->{email};
     warn "Logging out user";
     $self->render(json => {});
 };
@@ -57,4 +55,4 @@ __DATA__
 @@ index.html.ep
 % title 'Hello';
 % layout 'basic';
-<h1>Hello, World</hi>
+<h1>Hello, World</h1>
