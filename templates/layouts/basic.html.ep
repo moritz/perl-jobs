@@ -1,0 +1,47 @@
+<!doctype html><html>
+    <head>
+    <title><%= $title %></title>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- person doesn't like IE compatibility mode -->
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+
+        <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="/css/bootstrap-theme.css" rel="stylesheet" media="screen">
+        <script src="/js/jquery-2.0.3.min.js"></script>
+        <script src="https://login.persona.org/include.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script>
+            var App = {
+                "Config": <%== stash 'config_json' %>
+            };
+        </script>
+        <script src="js/custom.js"></script>
+    </head>
+    <body>
+    <div class="container">
+        <div class="navbar navbar-default">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">Test project</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                % if (session 'logged_in') {
+                    <li><a href="#" id="app-logout">Logout</a>
+                % } else {
+                    <li><a href="#" id="app-login">Login</a>
+                % }
+            </ul>
+        </div>
+
+    </div>
+      <div class="jumbotron">
+            <%== content %>
+      </div>
+    </div>
+    </body>
+
+</html>
+
+<!-- vim: set ft=html: -->
+
