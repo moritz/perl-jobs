@@ -20,6 +20,9 @@ __PACKAGE__->add_columns(
         data_type           => 'varchar',
         is_nullable         => 1,
     },
+    visibility          => {
+        is_nullable         => 0,
+    },
     natural_languages   => {
         data_type           => 'varchar',
         serializer_class    => 'Hstore',

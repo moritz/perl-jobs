@@ -7,6 +7,11 @@ use Mojo::UserAgent;
 use Mojo::JSON;
 use Data::Dumper;
 
+use lib 'lib';
+use PJ::Model;
+
+my $model = PJ::Model->autoconnect;
+
 app->secret('password123');
 
 my $ua = Mojo::UserAgent->new;
@@ -15,7 +20,8 @@ Mojolicious::Static->new->paths(['static']);
 
 get '/' => sub {
     my $self = shift;
-    warn Dumper $self->session;
+    my @profiles = $model->resultset('Profile')->search({ visibility => 'public'});
+    $self->stash(profiles    => \@profiles);
     $self->stash(config_json => Mojo::JSON->new->encode({ email => $self->session->{email} }));
     $self->render('index');
 } => 'index';
@@ -35,7 +41,6 @@ post '/login' => sub {
             $self->render(json => $v);
             return 1;
         }
-        warn Dumper([$tx->error]);
     }
     $self->render(json => { failed => 1}, status => 500);
 
@@ -56,3 +61,9 @@ __DATA__
 % title 'Hello';
 % layout 'basic';
 <h1>Hello, World</h1>
+
+<ul>
+% for my $p (@$profiles) {
+    <li><%= $p->name // $p->email %></li>
+% }
+</ul>
