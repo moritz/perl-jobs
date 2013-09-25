@@ -16,6 +16,12 @@ app->secret('password123');
 
 my $ua = Mojo::UserAgent->new;
 
+my @sections =  (
+    { name => 'natural_languages',     label => 'Natural Languages'     },
+    { name => 'programming_languages', label => 'Programming Languages' },
+    { name => 'perl_stuff',            label => 'Perl Technologies'     },
+);
+
 sub Mojolicious::Controller::common {
     my $self = shift;
     $self->stash(config_json => Mojo::JSON->new->encode({ email => $self->session->{email} }));
@@ -47,7 +53,8 @@ get '/profile/:id/edit' => sub {
     my $self = shift;
     $self->common;
     my $id = $self->param('id');
-    my $p = $model->resultset('Profile')->find($id);
+    my $rs = $model->resultset('Profile');
+    my $p  = $rs->find($id);
     if (!$p || $p->visibility ne 'public') {
         $self->render(text => 'No such profile', status => 404);
         return;
@@ -58,8 +65,17 @@ get '/profile/:id/edit' => sub {
         return;
     }
 
-
-
+    my @s;
+    for my $sec (@sections) {
+        my $name = $sec->{name};
+        push @s, {
+            %$sec,
+            preset  => [ keys %{ $p->$name() } ],
+            all     => $rs->all_entries_for($name),
+        };
+    }
+    $self->stash(sections => \@s, profile => $p);
+    $self->render('profile-edit');
 };
 
 post '/login' => sub {
@@ -123,3 +139,22 @@ __DATA__
 % $section->('Natural languages',     $profile->natural_languages);
 % $section->('Programming languages', $profile->programming_languages);
 % $section->('Perl-related skills',   $profile->perl_stuff);
+
+@@ profile-edit.html.ep
+% layout 'basic';
+% title 'Edit Proifle for ' .  ($profile->name // '(unnamed)');
+
+% for my $s (@$sections) {
+    <h2><%= $s->{label} %></h2>
+    <p><input type="hidden" style="width: 80%" value="<%= join ', ', @{$s->{preset}} %>" id="<%= $s->{name} %>" />
+    </p>
+% }
+
+% use Mojo::JSON 'j';
+<script>
+$(document).ready( function() {
+    % for my $s  (@$sections) {
+        $('#<%= $s->{name} %>').select2( <%== j { tags => $s->{all} } %> );
+    % }
+});
+</script>
