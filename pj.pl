@@ -16,15 +16,51 @@ app->secret('password123');
 
 my $ua = Mojo::UserAgent->new;
 
-Mojolicious::Static->new->paths(['static']);
+sub Mojolicious::Controller::common {
+    my $self = shift;
+    $self->stash(config_json => Mojo::JSON->new->encode({ email => $self->session->{email} }));
+
+}
 
 get '/' => sub {
     my $self = shift;
+    $self->common;
     my @profiles = $model->resultset('Profile')->search({ visibility => 'public'});
     $self->stash(profiles    => \@profiles);
-    $self->stash(config_json => Mojo::JSON->new->encode({ email => $self->session->{email} }));
     $self->render('index');
 } => 'index';
+
+get '/profile/:id' => sub {
+    my $self = shift;
+    $self->common;
+    my $id = $self->param('id');
+    my $p  = $model->resultset('Profile')->find($id);
+    if (!$p || $p->visibility ne 'public') {
+        $self->render(text => 'No such profile', status => 404);
+        return;
+    }
+    $self->stash(profile => $p);
+    $self->render('profile');
+};
+
+get '/profile/:id/edit' => sub {
+    my $self = shift;
+    $self->common;
+    my $id = $self->param('id');
+    my $p = $model->resultset('Profile')->find($id);
+    if (!$p || $p->visibility ne 'public') {
+        $self->render(text => 'No such profile', status => 404);
+        return;
+    }
+    my $email = $self->session->{email};
+    if (!$email || $email ne $p->email) {
+        $self->render(text => 'Access denied', status => 403);
+        return;
+    }
+
+
+
+};
 
 post '/login' => sub {
     my $self        = shift;
@@ -64,6 +100,26 @@ __DATA__
 
 <ul>
 % for my $p (@$profiles) {
-    <li><%= $p->name // $p->email %></li>
+    <li><a href="/profile/<%= $p->id; %>"><%= $p->name // $p->email %></a></li>
 % }
 </ul>
+
+@@ profile.html.ep
+% layout 'basic';
+% title 'Profile for ' . ($profile->name // '(unnamed)');
+% if ($profile->name) {
+    <h1><%= $profile->name %></h1>
+% }
+
+% my $section = sub {
+%    my ($title, $x) = @_;
+%    if ($x) {
+        <h2><%= $title %></h2>
+        % for (sort { $x->{$b} <=> $x->{$a} } keys %$x) {
+            <li><%= $_ %></li>
+        % }
+%    }
+% };
+% $section->('Natural languages',     $profile->natural_languages);
+% $section->('Programming languages', $profile->programming_languages);
+% $section->('Perl-related skills',   $profile->perl_stuff);
