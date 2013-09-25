@@ -9,15 +9,17 @@
 
         <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
         <link href="/css/bootstrap-theme.css" rel="stylesheet" media="screen">
+        <link href="/css/select2.css" rel="stylesheet" media="screen">
         <script src="/js/jquery-2.0.3.min.js"></script>
+        <script src="/js/select2.min.js"></script>
         <script src="https://login.persona.org/include.js"></script>
-        <script src="js/bootstrap.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
         <script>
             var App = {
                 "Config": <%== stash 'config_json' %>
             };
         </script>
-        <script src="js/custom.js"></script>
+        <script src="/js/custom.js"></script>
     </head>
     <body>
     <div class="container">
