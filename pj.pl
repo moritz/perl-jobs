@@ -156,11 +156,33 @@ __DATA__
 % layout 'basic';
 % title 'Edit Proifle for ' .  ($profile->name // '(unnamed)');
 
+<form action="/profile/<%= $profile->id %>/edit" method="post">
+
+<fieldset>
+    <label for="name">Name</label>
+    <input name="name" id="name" value="<%= $profile->name %>" />
+</fieldset>
+
+<fieldset>
+    <label for="privacy">Privacy</label>
+    <ul>
+        <li> <input type="radio" value="private" <%= q[checked] if $profile->visibility eq 'private' %> >Private - show this profile to nobody</input></li>
+        <li><input type="radio" value="semi" <%= q[checked] if $profile->visibility eq 'semi' %> >Protected - show this profile (but not email address) only to paying recruiters</input></li>
+        <li><input type="radio" value="public" <%= q[checked] if $profile->visibility eq 'public' %> >Public - show this profile (but not email address) to everybody</input></li>
+    </ul>
+
+</fieldset>
+
 % for my $s (@$sections) {
-    <h2><%= $s->{label} %></h2>
+    <fieldset>
+    <label for="<%= $s->{name} %>"><%= $s->{label} %></label>
     <p><input type="hidden" style="width: 80%" value="<%= join ', ', @{$s->{preset}} %>" id="<%= $s->{name} %>" />
     </p>
+    </fieldset>
 % }
+
+</form>
+</p>
 
 % use Mojo::JSON 'j';
 <script>
