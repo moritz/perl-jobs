@@ -105,6 +105,22 @@ post '/logout' => sub {
     $self->render(json => {});
 };
 
+get '/help/:page' => sub {
+    my $self = shift;
+    $self->common;
+    my $page = $self->param('page');
+    my %pages = (
+        'private-profile' => 1,
+    );
+    if ($pages{$page}) {
+        $self->render("help/$page");
+    }
+    else {
+        $self->render(text => 'No such help page', status => 404);
+    }
+
+};
+
 
 app->start();
 
@@ -158,3 +174,15 @@ $(document).ready( function() {
     % }
 });
 </script>
+
+@@ help/private-profile.html.ep
+% layout 'basic';
+% title qq[Help - What's the point of private profiles?];
+
+<p>Private profiles are not shown to anybody except yourself, but
+we use the skill set on your profile to select job advertisements
+for you.</p>
+
+<p>Note that the skills you specify still appear in the global list
+of skills, so don't state something so specific that a reader can
+discern your presence based on that skill.</p>
