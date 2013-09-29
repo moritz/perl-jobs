@@ -126,9 +126,8 @@ app->start();
 
 __DATA__
 @@ index.html.ep
-% title 'Hello';
+% title 'MeatPan, your first stop for Perl talent and jobs';
 % layout 'basic';
-<h1>Hello, World</h1>
 
 <ul>
 % for my $p (@$profiles) {
@@ -139,9 +138,6 @@ __DATA__
 @@ profile.html.ep
 % layout 'basic';
 % title 'Profile for ' . ($profile->name // '(unnamed)');
-% if ($profile->name) {
-    <h1><%= $profile->name %></h1>
-% }
 
 % my $section = sub {
 %    my ($title, $x) = @_;
