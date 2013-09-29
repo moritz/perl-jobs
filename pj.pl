@@ -55,11 +55,11 @@ get '/profile/:id/edit' => sub {
     my $id = $self->param('id');
     my $rs = $model->resultset('Profile');
     my $p  = $rs->find($id);
-    if (!$p || $p->visibility ne 'public') {
+    my $email = $self->session->{email};
+    if (!$p || ($p->visibility ne 'public' && $p->email ne $email)) {
         $self->render(text => 'No such profile', status => 404);
         return;
     }
-    my $email = $self->session->{email};
     if (!$email || $email ne $p->email) {
         $self->render(text => 'Access denied', status => 403);
         return;
@@ -76,6 +76,31 @@ get '/profile/:id/edit' => sub {
     }
     $self->stash(sections => \@s, profile => $p);
     $self->render('profile-edit');
+};
+
+post '/profile/:id/edit' => sub {
+    my $self = shift;
+    $self->common;
+    my $id = $self->param('id');
+    my $rs = $model->resultset('Profile');
+    my $p  = $rs->find($id);
+    my $email = $self->session->{email};
+    if (!$email || !$p || $p->email ne $email) {
+        $self->render(text => 'No such profile', status => 404);
+        return;
+    }
+    my %new_attrs;
+    for (qw/name visibility/) {
+        $new_attrs{$_} = $self->param($_);
+    }
+    for (map $_->{name}, @sections) {
+        my @keys = split /,\s*/, $self->param($_);
+        my %h;
+        @h{@keys} = (1) x @keys;
+        $new_attrs{$_} = \%h;
+    }
+    $p->update(\%new_attrs);
+    return $self->redirect_to("/profile/" . $p->id . '/edit');
 };
 
 post '/login' => sub {
@@ -166,9 +191,9 @@ __DATA__
 <fieldset>
     <label for="privacy">Privacy</label>
     <ul>
-        <li> <input type="radio" value="private" <%= q[checked] if $profile->visibility eq 'private' %> >Private - show this profile to nobody</input></li>
-        <li><input type="radio" value="semi" <%= q[checked] if $profile->visibility eq 'semi' %> >Protected - show this profile (but not email address) only to paying recruiters</input></li>
-        <li><input type="radio" value="public" <%= q[checked] if $profile->visibility eq 'public' %> >Public - show this profile (but not email address) to everybody</input></li>
+        <li> <input type="radio" name="visibility" value="private" <%= q[checked] if $profile->visibility eq 'private' %> >Private - show this profile to nobody</li>
+        <li><input type="radio" name="visibility "value="semi" <%= q[checked] if $profile->visibility eq 'semi' %> >Protected - show this profile (but not email address) only to paying recruiters</li>
+        <li><input type="radio" name="visibility" value="public" <%= q[checked] if $profile->visibility eq 'public' %> >Public - show this profile (but not email address) to everybody</li>
     </ul>
 
 </fieldset>
@@ -176,10 +201,12 @@ __DATA__
 % for my $s (@$sections) {
     <fieldset>
     <label for="<%= $s->{name} %>"><%= $s->{label} %></label>
-    <p><input type="hidden" style="width: 80%" value="<%= join ', ', @{$s->{preset}} %>" id="<%= $s->{name} %>" />
+    <p><input type="hidden" style="width: 80%" value="<%= join ', ', sort @{$s->{preset}} %>" id="<%= $s->{name} %>" name="<%= $s->{name} %>" />
     </p>
     </fieldset>
 % }
+
+<input type="submit" />
 
 </form>
 </p>
