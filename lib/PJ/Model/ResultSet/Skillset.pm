@@ -1,4 +1,4 @@
-package PJ::Model::ResultSet::Profile;
+package PJ::Model::ResultSet::Skillset;
 use 5.014;
 use warnings;
 
@@ -10,7 +10,7 @@ sub all_entries_for {
     $self->result_source->storage->dbh_do(sub {
         my ($storage, $dbh) = @_;
         $dbh->selectcol_arrayref(
-            qq[select skeys($col) AS s, COUNT(*) AS c from profile GROUP BY s ORDER BY c DESC LIMIT 200]
+            qq[select skeys($col) AS s, COUNT(*) AS c from skillset GROUP BY s ORDER BY c DESC LIMIT 200]
         );
     });
 }

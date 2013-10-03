@@ -1,5 +1,6 @@
+DROP TABLE IF EXISTS login;
+DROP TABLE IF EXISTS skillset;
 DROP TYPE IF EXISTS VISIBILITY_T;
-DROP TABLE IF EXISTS profile;
 
 CREATE OR REPLACE FUNCTION update_modified_column()
 RETURNS TRIGGER AS $$
@@ -11,18 +12,26 @@ $$ language 'plpgsql';
 
 
 CREATE TYPE VISIBILITY_T AS ENUM ('private', 'semi', 'public');
-CREATE TABLE profile (
+CREATE TYPE SKILLSET_T   AS ENUM ('login', 'job');
+
+CREATE TABLE skillset (
     id          SERIAL PRIMARY KEY,
-    email       TEXT NOT NULL UNIQUE,
     name        TEXT,
     visibility  VISIBILITY_T NOT NULL DEFAULT 'private',
+    belongs_to  SKILLSET_T   NOT NULL DEFAULT 'login',
     natural_languages       HSTORE,
     programming_languages   HSTORE,
     perl_stuff              HSTORE,
     other_technoligies      HSTORE,
-    focus                   HSTORE,
-    softskills              HSTORE,
     modified    TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE TRIGGER update_profile_modtime BEFORE UPDATE ON profile FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TABLE login (
+    id          SERIAL PRIMARY KEY,
+    email       TEXT NOT NULL UNIQUE,
+    skillset    INTEGER REFERENCES skillset (id),
+    modified    TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TRIGGER update_login_modtime BEFORE UPDATE ON login FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+CREATE TRIGGER update_skillset_modtime BEFORE UPDATE ON skillset FOR EACH ROW EXECUTE PROCEDURE update_modified_column();

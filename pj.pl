@@ -31,7 +31,7 @@ sub Mojolicious::Controller::common {
 get '/' => sub {
     my $self = shift;
     $self->common;
-    my @profiles = $model->resultset('Profile')->search({ visibility => 'public'});
+    my @profiles = $model->resultset('Skillset')->search({ visibility => 'public', belongs_to => 'login'});
     $self->stash(profiles    => \@profiles);
     $self->render('index');
 } => 'index';
@@ -40,7 +40,8 @@ get '/profile/:id' => sub {
     my $self = shift;
     $self->common;
     my $id = $self->param('id');
-    my $p  = $model->resultset('Profile')->find($id);
+    my $p  = $model->resultset('Login')->find($id, { prefetch => 'skillset' });
+    $p     = $p->skillset if $p;
     if (!$p || $p->visibility ne 'public') {
         $self->render(text => 'No such profile', status => 404);
         return;
@@ -53,16 +54,17 @@ get '/profile/:id/edit' => sub {
     my $self = shift;
     $self->common;
     my $id = $self->param('id');
-    my $rs = $model->resultset('Profile');
-    my $p  = $rs->find($id);
+    my $rs = $model->resultset('Login');
+    my $p  = $rs->find($id, { prefetch => 'skillset' });
+
     my $email = $self->session->{email};
-    if (!$p || ($p->visibility ne 'public' && $p->email ne $email)) {
+    if (!$p || !$email || ($p->email ne $email)) {
         $self->render(text => 'No such profile', status => 404);
         return;
     }
-    if (!$email || $email ne $p->email) {
-        $self->render(text => 'Access denied', status => 403);
-        return;
+    my $s = $p->skillset;
+    unless ($s) {
+        $s = $p->create_related('skillset', {});
     }
 
     my @s;
@@ -70,11 +72,11 @@ get '/profile/:id/edit' => sub {
         my $name = $sec->{name};
         push @s, {
             %$sec,
-            preset  => [ keys %{ $p->$name() } ],
+            preset  => [ keys %{ $s->$name() } ],
             all     => $rs->all_entries_for($name),
         };
     }
-    $self->stash(sections => \@s, profile => $p);
+    $self->stash(sections => \@s, profile => $s, login => $p);
     $self->render('profile-edit');
 };
 
@@ -181,7 +183,7 @@ __DATA__
 % layout 'basic';
 % title 'Edit Proifle for ' .  ($profile->name // '(unnamed)');
 
-<form action="/profile/<%= $profile->id %>/edit" method="post">
+<form action="/profile/<%= $login->id %>/edit" method="post">
 
 <fieldset>
     <label for="name">Name</label>
