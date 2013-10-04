@@ -54,8 +54,8 @@ get '/profile/:id/edit' => sub {
     my $self = shift;
     $self->common;
     my $id = $self->param('id');
-    my $rs = $model->resultset('Login');
-    my $p  = $rs->find($id, { prefetch => 'skillset' });
+    my $rs = $model->resultset('Skillset');
+    my $p  = $model->resultset('Login')->find($id, { prefetch => 'skillset' });
 
     my $email = $self->session->{email};
     if (!$p || !$email || ($p->email ne $email)) {
@@ -84,13 +84,14 @@ post '/profile/:id/edit' => sub {
     my $self = shift;
     $self->common;
     my $id = $self->param('id');
-    my $rs = $model->resultset('Profile');
-    my $p  = $rs->find($id);
+    my $l  = $model->resultset('Login', {prefetch => 'skillset'})->find($id);
     my $email = $self->session->{email};
-    if (!$email || !$p || $p->email ne $email) {
+    if (!$email || !$l || $l->email ne $email) {
         $self->render(text => 'No such profile', status => 404);
         return;
     }
+    my $p = $l->skillset;
+    $p = $l->create_related('skillset') unless $p;
     my %new_attrs;
     for (qw/name visibility/) {
         $new_attrs{$_} = $self->param($_);
@@ -193,7 +194,7 @@ __DATA__
 <fieldset>
     <label for="privacy">Privacy</label>
     <ul>
-        <li> <input type="radio" name="visibility" value="private" <%= q[checked] if $profile->visibility eq 'private' %> >Private - show this profile to nobody</li>
+        <li> <input type="radio" name="visibility" value="private" <%= q[checked] if $profile->visibility eq 'private' %> >Private - show this profile to nobody <a href="/help/private-profile">(what's the point?)</a></li>
         <li><input type="radio" name="visibility "value="semi" <%= q[checked] if $profile->visibility eq 'semi' %> >Protected - show this profile (but not email address) only to paying recruiters</li>
         <li><input type="radio" name="visibility" value="public" <%= q[checked] if $profile->visibility eq 'public' %> >Public - show this profile (but not email address) to everybody</li>
     </ul>
