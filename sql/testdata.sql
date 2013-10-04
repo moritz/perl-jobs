@@ -1,5 +1,5 @@
-INSERT INTO skillset ( name, visibility, natural_languages, programming_languages, perl_stuff)
-        VALUES ('Moritz Lenz', 'public',
+INSERT INTO skillset ( name, visibility, url, natural_languages, programming_languages, perl_stuff)
+        VALUES ('Moritz Lenz', 'public', 'http://perlgeek.de/',
             'German=>4,English=>3,French=>1,Norwegian=>1',
             'C=>1, "C++"=>1, Javascript=>1, SQL=>1, Eiffel=>1,Bash=>1',
             'Moose=>1,"DBIx::Class"=>1,"Character encodings"=>1'

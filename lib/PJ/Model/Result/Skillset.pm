@@ -27,6 +27,10 @@ __PACKAGE__->add_columns(
         data_type           => 'varchar',
         is_nullable         => 1,
     },
+    url                 => {
+        data_type           => 'varchar',
+        is_nullable         => 1,
+    },
     visibility          => {
         is_nullable         => 0,
     },

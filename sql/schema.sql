@@ -19,6 +19,7 @@ CREATE TABLE skillset (
     name        TEXT,
     visibility  VISIBILITY_T NOT NULL DEFAULT 'private',
     belongs_to  SKILLSET_T   NOT NULL DEFAULT 'login',
+    url         VARCHAR(512),
     natural_languages       HSTORE,
     programming_languages   HSTORE,
     perl_stuff              HSTORE,

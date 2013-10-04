@@ -93,7 +93,7 @@ post '/profile/:id/edit' => sub {
     my $p = $l->skillset;
     $p = $l->create_related('skillset') unless $p;
     my %new_attrs;
-    for (qw/name visibility/) {
+    for (qw/name visibility url/) {
         $new_attrs{$_} = $self->param($_);
     }
     for (map $_->{name}, @sections) {
@@ -167,6 +167,10 @@ __DATA__
 % layout 'basic';
 % title 'Profile for ' . ($profile->name // '(unnamed)');
 
+% if ($profile->url) {
+    <p><a href="<%= $profile->url %>"><%= $profile->url %></a></p>
+% }
+
 % my $section = sub {
 %    my ($title, $x) = @_;
 %    if ($x) {
@@ -190,6 +194,12 @@ __DATA__
     <label for="name">Name</label>
     <input name="name" id="name" value="<%= $profile->name %>" />
 </fieldset>
+
+<fieldset>
+    <label for="url">URL</label>
+    <input name="url" id="url" value="<%= $profile->url %>" />
+</fieldset>
+
 
 <fieldset>
     <label for="privacy">Privacy</label>
