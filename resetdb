@@ -1,0 +1,3 @@
+#!/bin/bash
+psql -h localhost -U pj pj-dev < sql/schema.sql && \
+psql -h localhost -U pj pj-dev < sql/testdata.sql
