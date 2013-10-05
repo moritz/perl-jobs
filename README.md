@@ -47,3 +47,9 @@ You don't need to be a very skilled hacker, or familiar with all the
 technologies used (hey, I'm not familiar with half of them). I'm willing to
 mentor contributors who want more feedback. If you contribute lots of stuff,
 I'm willing to share revenue if there ever is some.
+
+License
+-------
+
+Affero General Public License. Contact me if you want to license the code
+under any other license.
