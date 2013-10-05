@@ -25,7 +25,7 @@ CREATE TABLE skillset (
     natural_languages       HSTORE,
     programming_languages   HSTORE,
     perl_stuff              HSTORE,
-    other_technoligies      HSTORE,
+    other_technologies      HSTORE,
     modified    TIMESTAMP NOT NULL DEFAULT NOW()
 );
 CREATE TRIGGER update_skillset_modtime BEFORE UPDATE ON skillset FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
