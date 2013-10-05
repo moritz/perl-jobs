@@ -40,6 +40,7 @@ __PACKAGE__->add_columns(
     natural_languages       => $hstore,
     programming_languages   => $hstore,
     perl_stuff              => $hstore,
+    other_technologies      => $hstore,
 );
 __PACKAGE__->set_primary_key('id');
 

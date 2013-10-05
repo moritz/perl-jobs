@@ -20,6 +20,7 @@ my @sections =  (
     { name => 'natural_languages',     label => 'Natural Languages'     },
     { name => 'programming_languages', label => 'Programming Languages' },
     { name => 'perl_stuff',            label => 'Perl Technologies'     },
+    { name => 'other_technologies',    label => 'Other Technologies'     },
 );
 
 sub Mojolicious::Controller::common {
@@ -72,7 +73,7 @@ get '/profile/:id/edit' => sub {
         my $name = $sec->{name};
         push @s, {
             %$sec,
-            preset  => [ keys %{ $s->$name() } ],
+            preset  => [ keys %{ $s->$name() // {} } ],
             all     => $rs->all_entries_for($name),
         };
     }
