@@ -28,8 +28,9 @@
                 <a class="navbar-brand" href="/">Test project</a>
             </div>
             <ul class="nav navbar-nav navbar-right">
-                <li>Logged in as: <%= session('email') // '(nobody)' %></li>
                 % if (session 'email') {
+                    <li><a href="/profile/<%= stash('id') %>">Logged in as: <%= session('email') %></a></li>
+                    <li><a href="/profile/<%= stash('id') %>/edit">Edit profile</a></li>
                     <li><a href="#" id="app-logout">Logout</a>
                 % } else {
                     <li><a href="#" id="app-login">Login</a>

@@ -24,8 +24,17 @@ my @sections =  (
 );
 
 sub Mojolicious::Controller::common {
-    my $self = shift;
-    $self->stash(config_json => Mojo::JSON->new->encode({ email => $self->session->{email} }));
+    my $self  = shift;
+    my $email = lc $self->session->{email};
+    my $id;
+    if ($email) {
+        my $login = $model->resultset('Login')->find({ email => $email});
+        $login  ||= $model->resultset('Login')->create({ email => $email});
+        $id = $login->id;
+        $self->stash(id => $id) if $id;
+    }
+
+    $self->stash(config_json => Mojo::JSON->new->encode({ email => $email, id => $id }));
 
 }
 
