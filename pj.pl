@@ -7,6 +7,10 @@ use Mojo::UserAgent;
 use Mojo::JSON;
 use Data::Dumper;
 
+# Mojo::UserAgent needs IO::Socket::SSL, but doesn't give a 
+# proper error message when it's missing.
+require IO::Socket::SSL;
+
 use lib 'lib';
 use PJ::Model;
 

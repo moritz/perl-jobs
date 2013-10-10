@@ -20,7 +20,6 @@ $(document).ready(function() {
                 dataType: 'json',
                 data: {assertion: assertion},
                 success: function(res, status, xhr) {
-                    console.log(res);
 //                    alert('You are now logged in as' + res[email]);
 //                    App.Config.email = res[email];
                     window.location.reload();
@@ -32,8 +31,8 @@ $(document).ready(function() {
             });
         },
         onlogout: function() {
-            if (App.Config.email === null)
-                return;
+            if (!App.Config.email)
+                return false;
             $.ajax({
             type: 'POST',
             url: '/logout',
