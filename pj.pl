@@ -200,7 +200,7 @@ __DATA__
 
 @@ profile-edit.html.ep
 % layout 'basic';
-% title 'Edit Proifle for ' .  ($profile->name // '(unnamed)');
+% title 'Edit Profile for ' .  ($profile->name // '(unnamed)');
 
 <form action="/profile/<%= $login->id %>/edit" method="post">
 
