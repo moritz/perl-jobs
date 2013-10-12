@@ -19,19 +19,19 @@ __PACKAGE__->add_columns(
         data_type           => 'integer',
         is_nullable         => 1,
         is_numeric          => 1,
-        accessor            => 'fk_skillset',
     },
     entered_by => {
         data_type           => 'integer',
         is_nullable         => 0,
         is_numeric          => 1,
-        accessor            => 'fk_entered_by',
     },
     company => {
         is_nullable         => 0,
     },
 );
 
+sub fk_skillset   { shift->get_column('skillset') }
+sub fk_entered_by { shift->get_column('entered_by') }
 
 __PACKAGE__->set_primary_key('id');
 __PACKAGE__->belongs_to(skillset => 'PJ::Model::Result::Skillset', 'skillset');

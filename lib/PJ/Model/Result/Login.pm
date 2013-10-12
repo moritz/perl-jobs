@@ -27,11 +27,12 @@ __PACKAGE__->add_columns(
         data_type           => 'varchar',
         is_nullable         => 0,
     },
-    skillset             => {
-        accessor            => 'fk_skillset',
-    },
+    skillset => { },
 );
 __PACKAGE__->set_primary_key('id');
 
 __PACKAGE__->might_have(skillset => 'PJ::Model::Result::Skillset');
+
+sub fk_skillset { shift->get_column('skillset') }
+
 1;
