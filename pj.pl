@@ -7,12 +7,14 @@ use Mojo::UserAgent;
 use Mojo::JSON;
 use Data::Dumper;
 
+
 # Mojo::UserAgent needs IO::Socket::SSL, but doesn't give a 
 # proper error message when it's missing.
 require IO::Socket::SSL;
 
 use lib 'lib';
 use PJ::Model;
+use PJ::Util qw/eqv/;
 
 my $model = PJ::Model->autoconnect;
 
@@ -101,13 +103,14 @@ post '/profile/:id/edit' => sub {
     $p = $l->create_related('skillset') unless $p;
     my %new_attrs;
     for ($p->single_value) {
-        $new_attrs{$_} = $self->param($_);
+        my $v = $self->param($_);
+        $new_attrs{$_} = $v unless eqv $p->$_(), $v;
     }
     for (map $_->{name}, $p->tagsets) {
         my @keys = split /,\s*/, $self->param($_);
         my %h;
         @h{@keys} = (1) x @keys;
-        $new_attrs{$_} = \%h;
+        $new_attrs{$_} = \%h unless eqv \%h, $p->$_();
     }
     $p->update(\%new_attrs);
     return $self->redirect_to("/profile/" . $p->id . '/edit');
