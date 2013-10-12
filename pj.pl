@@ -45,6 +45,21 @@ get '/' => sub {
     $self->render('index');
 } => 'index';
 
+get '/job/:id' => sub {
+    my $self = shift;
+    $self->common;
+    my $id = $self->param('id');
+    my $j  = $model->resultset('Job')->find($id, { prefetch => ['skillset', 'entered_by'] });
+    # TODO: allow the one who entered a job to always view it
+    if (!$j || $j->skillset->visibility ne 'public') {
+        $self->render(text => 'No such job posting', status => 404);
+        return;
+    }
+    $self->stash(job => $j);
+    $self->render('job');
+};
+
+
 get '/profile/:id' => sub {
     my $self = shift;
     $self->common;
@@ -173,9 +188,7 @@ __DATA__
 % }
 </ul>
 
-@@ profile.html.ep
-% layout 'basic';
-% title 'Profile for ' . ($profile->name // '(unnamed)');
+@@ skillset.html.ep
 
 % if ($profile->url) {
     <p><a href="<%= $profile->url %>"><%= $profile->url %></a></p>
@@ -193,6 +206,18 @@ __DATA__
 % $section->('Natural languages',     $profile->natural_languages);
 % $section->('Programming languages', $profile->programming_languages);
 % $section->('Perl-related skills',   $profile->perl_stuff);
+
+@@ profile.html.ep
+% layout 'basic';
+% title 'Profile for ' . ($profile->name // '(unnamed)');
+%= include 'skillset', profile => $profile;
+
+@@ job.html.ep
+% layout 'basic';
+% title $job->skillset->name // '(untitled)';
+<p>For <%= $job->company %></p>
+%= include 'skillset', profile => $job->skillset;
+
 
 @@ profile-edit.html.ep
 % layout 'basic';
