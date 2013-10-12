@@ -249,6 +249,8 @@ __DATA__
 % layout 'basic';
 % title 'Edit Profile for ' .  ($profile->name // '(unnamed)');
 
+<p><a href="/profile/<%= $login->id %>">Back to profile</a></p>
+
 <form action="/profile/<%= $login->id %>/edit" method="post">
 
 <fieldset>
