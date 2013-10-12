@@ -45,4 +45,17 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key('id');
 
 __PACKAGE__->has_many('login' => 'PJ::Model::Result::Login', 'skillset');
+
+sub tagsets {
+    { name => 'natural_languages',     label => 'Natural Languages'     },
+    { name => 'programming_languages', label => 'Programming Languages' },
+    { name => 'perl_stuff',            label => 'Perl Technologies'     },
+    { name => 'other_technologies',    label => 'Other Technologies'    },
+}
+
+sub single_value {
+    qw/name visibility url/;
+}
+
+
 1;

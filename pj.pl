@@ -20,13 +20,6 @@ app->secret('password123');
 
 my $ua = Mojo::UserAgent->new;
 
-my @sections =  (
-    { name => 'natural_languages',     label => 'Natural Languages'     },
-    { name => 'programming_languages', label => 'Programming Languages' },
-    { name => 'perl_stuff',            label => 'Perl Technologies'     },
-    { name => 'other_technologies',    label => 'Other Technologies'     },
-);
-
 sub Mojolicious::Controller::common {
     my $self  = shift;
     my $email = lc $self->session->{email};
@@ -82,7 +75,7 @@ get '/profile/:id/edit' => sub {
     }
 
     my @s;
-    for my $sec (@sections) {
+    for my $sec ($s->tagsets) {
         my $name = $sec->{name};
         push @s, {
             %$sec,
@@ -107,10 +100,10 @@ post '/profile/:id/edit' => sub {
     my $p = $l->skillset;
     $p = $l->create_related('skillset') unless $p;
     my %new_attrs;
-    for (qw/name visibility url/) {
+    for ($p->single_value) {
         $new_attrs{$_} = $self->param($_);
     }
-    for (map $_->{name}, @sections) {
+    for (map $_->{name}, $p->tagsets) {
         my @keys = split /,\s*/, $self->param($_);
         my %h;
         @h{@keys} = (1) x @keys;
