@@ -25,5 +25,5 @@ INSERT INTO login (email, skillset) VALUES ('moritz@faui2k3.org', 1);
 INSERT INTO login (email, skillset) VALUES ('larry@wall.org', 1);
 INSERT INTO login (email) VALUES ('bla@orionwt.co.uk');
 
-INSERT INTO job (skillset, entered_by) VALUES (3, 3);
+INSERT INTO job (skillset, entered_by, company) VALUES (3, 3, 'Orion Web Technologies Ltd');
 

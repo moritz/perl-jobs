@@ -27,6 +27,9 @@ __PACKAGE__->add_columns(
         is_numeric          => 1,
         accessor            => 'fk_entered_by',
     },
+    company => {
+        is_nullable         => 0,
+    },
 );
 
 

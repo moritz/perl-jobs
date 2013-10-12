@@ -44,6 +44,7 @@ CREATE TABLE job (
     id          SERIAL PRIMARY KEY,
     skillset    INTEGER REFERENCES skillset (id),
     entered_by  INTEGER NOT NULL REFERENCES login (id),
+    company     VARCHAR(255) NOT NULL,
     modified    TIMESTAMP NOT NULL DEFAULT NOW()
 );
 CREATE TRIGGER update_job_modtime BEFORE UPDATE ON login FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
