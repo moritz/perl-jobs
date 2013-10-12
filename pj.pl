@@ -211,9 +211,9 @@ __DATA__
 <fieldset>
     <label for="privacy">Privacy</label>
     <ul>
-        <li> <input type="radio" name="visibility" value="private" <%= q[checked] if $profile->visibility eq 'private' %> >Private - show this profile to nobody <a href="/help/private-profile">(what's the point?)</a></li>
-        <li><input type="radio" name="visibility "value="semi" <%= q[checked] if $profile->visibility eq 'semi' %> >Protected - show this profile (but not email address) only to paying recruiters</li>
-        <li><input type="radio" name="visibility" value="public" <%= q[checked] if $profile->visibility eq 'public' %> >Public - show this profile (but not email address) to everybody</li>
+        <li><input type="radio" name="visibility" value="private" <%= q[checked] if $profile->visibility eq 'private' %> >Private - show this profile to nobody <a href="/help/private-profile">(what's the point?)</a></input></li>
+        <li><input type="radio" name="visibility" value="semi" <%= q[checked] if $profile->visibility eq 'semi' %> >Protected - show this profile (but not email address) only to paying recruiters</input></li>
+        <li><input type="radio" name="visibility" value="public" <%= q[checked] if $profile->visibility eq 'public' %> >Public - show this profile (but not email address) to everybody</input></li>
     </ul>
 
 </fieldset>
