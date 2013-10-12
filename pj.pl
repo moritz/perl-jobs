@@ -40,8 +40,21 @@ sub Mojolicious::Controller::common {
 get '/' => sub {
     my $self = shift;
     $self->common;
-    my @profiles = $model->resultset('Skillset')->search({ visibility => 'public', belongs_to => 'login'});
+    my @profiles = $model->resultset('Skillset')->search({ visibility => 'public', belongs_to => 'login'}, {limit =>  50});
     $self->stash(profiles    => \@profiles);
+
+    my @jobs = $model->resultset('Job')->search(
+        {
+            'skillset.visibility' => 'public',
+        },
+        {
+#            join        => 'skillset',
+            prefetch    => 'skillset',
+            limit       => 50,
+        },
+    );
+    $self->stash(jobs => \@jobs);
+
     $self->render('index');
 } => 'index';
 
@@ -182,11 +195,24 @@ __DATA__
 % title 'MeatPan, your first stop for Perl talent and jobs';
 % layout 'basic';
 
-<ul>
-% for my $p (@$profiles) {
-    <li><a href="/profile/<%= $p->id; %>"><%= $p->name // $p->email %></a></li>
-% }
-</ul>
+<div class="row">
+    <div class="span4">
+        <h2>Job offers</h2>
+        <ul>
+        % for my $j (@$jobs) {
+            <li><a href="/profile/<%= $j->id; %>"><%= $j->skillset->name %></a></li>
+        % }
+        </ul>
+    </div>
+    <div class="span3">
+        <h2>Profiles</h2>
+        <ul>
+        % for my $p (@$profiles) {
+            <li><a href="/profile/<%= $p->id; %>"><%= $p->name %></a></li>
+        % }
+        </ul>
+    </div>
+</div>
 
 @@ skillset.html.ep
 
